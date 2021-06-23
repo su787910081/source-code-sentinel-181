@@ -29,18 +29,28 @@ public class GatewayParamFlowItem {
     private Integer index;
 
     /**
+     * suyh - 从请求中提取参数的策略，目前支持提取来源 IP（PARAM_PARSE_STRATEGY_CLIENT_IP）、
+     * suyh - Host（PARAM_PARSE_STRATEGY_HOST）、任意 Header（PARAM_PARSE_STRATEGY_HEADER）
+     * suyh - 和任意 URL 参数（PARAM_PARSE_STRATEGY_URL_PARAM）四种模式。
+     *
      * Strategy for parsing item (e.g. client IP, arbitrary headers and URL parameters).
      */
     private int parseStrategy;
     /**
+     * suyh - 若提取策略选择 Header 模式或 URL 参数模式，则需要指定对应的 header 名称或 URL 参数名称。
+     *
      * Field to get (only required for arbitrary headers or URL parameters mode).
      */
     private String fieldName;
     /**
+     * suyh - 参数值的匹配模式，只有匹配该模式的请求属性值会纳入统计和流控；若为空则统计该请求属性的所有值。（1.6.2 版本开始支持）
+     *
      * Matching pattern. If not set, all values will be kept in LRU map.
      */
     private String pattern;
     /**
+     * suyh - 参数值的匹配策略，目前支持精确匹配（PARAM_MATCH_STRATEGY_EXACT）、
+     * suyh - 子串匹配（PARAM_MATCH_STRATEGY_CONTAINS）和正则匹配（PARAM_MATCH_STRATEGY_REGEX）。（1.6.2 版本开始支持）
      * Matching strategy for item value.
      */
     private int matchStrategy = SentinelGatewayConstants.PARAM_MATCH_STRATEGY_EXACT;

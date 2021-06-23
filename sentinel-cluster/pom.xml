@@ -20,7 +20,8 @@
         <module>sentinel-cluster-client-default</module>
         <module>sentinel-cluster-server-default</module>
         <module>sentinel-cluster-common-default</module>
-        <module>sentinel-cluster-server-envoy-rls</module>
+        <!--suyh - 暂时先注释掉，有类找不到。-->
+        <!-- <module>sentinel-cluster-server-envoy-rls</module> -->
     </modules>
 
     <dependencyManagement>
