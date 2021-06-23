@@ -1,0 +1,21 @@
+
+# // suyh - 这是我自己的测试
+spring:
+  cloud:
+    gateway:
+      enabled: true
+      discovery:
+        locator:
+          lower-case-service-id: true
+      routes:
+        # 页面访问：http://localhost:8090/suyh/name 就可以跳转到SuyhController 中了
+        - id: suyh-demo
+          uri: http://localhost:11001
+          predicates:
+            - Path=/suyh/**
+
+# 需要添加命令行参数，或者添加到默认配置文件(sentinel.properties)中
+# dashboard 服务器的访问域名
+#  -Dcsp.sentinel.dashboard.server=localhost:8080
+# 指定当前应用为网关模式
+#  -Dcsp.sentinel.app.type=1
