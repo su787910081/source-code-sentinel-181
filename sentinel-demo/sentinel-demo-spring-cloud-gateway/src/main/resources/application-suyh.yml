@@ -8,6 +8,17 @@ spring:
         locator:
           lower-case-service-id: true
       routes:
+        # Add your routes here.
+        - id: aliyun_route
+          uri: https://www.aliyun.com/
+          predicates:
+            - Path=/product/**
+        - id: httpbin_route
+          uri: https://httpbin.org
+          predicates:
+            - Path=/httpbin/**
+          filters:
+            - RewritePath=/httpbin/(?<segment>.*), /$\{segment}
         # 页面访问：http://localhost:8090/suyh/name 就可以跳转到SuyhController 中了
         - id: suyh-demo
           uri: http://localhost:11001
