@@ -90,7 +90,8 @@ public final class ConfigUtil {
         return false;
     }
 
-
+    // suyh - 这里，对属性文件进行加载，对每一个jar 包中的该配置文件都会进行加载。
+    // suyh - 但是这里依赖包中的配置会覆盖掉应用包中的，但是对于这个优先级顺序还不清楚。
     private static Properties loadPropertiesFromClasspathFile(String fileName) {
         fileName = fileName.substring(CLASSPATH_FILE_FLAG.length()).trim();
 
@@ -115,6 +116,7 @@ public final class ConfigUtil {
                          new BufferedReader(new InputStreamReader(url.openStream(), getCharset()))) {
                 Properties p = new Properties();
                 p.load(bufferedReader);
+                // suyh - 感觉这里是不是应该将存在的数据就不要再替换了，否则后面的数据会覆盖前面的数据。
                 properties.putAll(p);
             } catch (Throwable e) {
                 e.printStackTrace();
