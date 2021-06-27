@@ -51,12 +51,14 @@ public class LogBase {
     public static final String LOG_OUTPUT_TYPE_CONSOLE = "console";
     public static final String LOG_CHARSET_UTF8 = "utf-8";
 
+    // suyh - 日志目录: ${user.home}/logs/cps/
     private static final String DIR_NAME = "logs" + File.separator + "csp";
     private static final String USER_HOME = "user.home";
 
 
     private static boolean logNameUsePid;
     private static String logOutputType;
+    // suyh - 默认的日志目录是${user.home}/logs/cps/，或者使用 csp.sentinel.log.dir 配置项来指定目录
     private static String logBaseDir;
     private static String logCharSet;
 
