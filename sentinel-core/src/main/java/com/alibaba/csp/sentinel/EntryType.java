@@ -16,6 +16,10 @@
 package com.alibaba.csp.sentinel;
 
 /**
+ * https://www.javadoop.com/post/sentinel
+ * 第二个参数标识资源的类型，我们左边的代码使用了 EntryType.IN 代表这个是入口流量，比如我们的接口对外提供服务，那么我们通常就是控制入口流量；
+ * EntryType.OUT 代表出口流量，比如上面的 getOrderInfo 方法（没写默认就是 OUT），它的业务需要调用订单服务，像这种情况，压力其实都在订单服务中，那么我们就指定它为出口流量。
+ * 这个流量类型有什么用呢？答案在 SystemSlot 类中，它用于实现自适应限流，根据系统健康状态来判断是否要限流，如果是 OUT 类型，由于压力在外部系统中，所以就不需要执行这个规则。
  * An enum marks resource invocation direction.
  *
  * @author jialiang.linjl
