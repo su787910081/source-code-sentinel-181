@@ -13,4 +13,9 @@ public class SuyhController {
         log.info("name");
         return "suyh";
     }
+    
+    @RequestMapping("/age")
+    public Integer age() {
+        return 22;
+    }
 }
