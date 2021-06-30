@@ -90,8 +90,14 @@ public class GatewayConfiguration {
                 add(new ApiPathPredicateItem().setPattern("/**")
                     .setMatchStrategy(SentinelGatewayConstants.URL_MATCH_STRATEGY_PREFIX));
             }});
+        ApiDefinition apiSuyh = new ApiDefinition("suyh_customized_api")
+                .setPredicateItems(new HashSet<ApiPredicateItem>() {{
+                    add(new ApiPathPredicateItem().setPattern("/suyh/**")
+                            .setMatchStrategy(SentinelGatewayConstants.URL_MATCH_STRATEGY_PREFIX));
+                }});
         definitions.add(api1);
         definitions.add(api2);
+        definitions.add(apiSuyh);
         GatewayApiDefinitionManager.loadApiDefinitions(definitions);
     }
 
