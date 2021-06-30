@@ -20,10 +20,14 @@ spring:
           filters:
             - RewritePath=/httpbin/(?<segment>.*), /$\{segment}
         # 页面访问：http://localhost:8090/suyh/name 就可以跳转到SuyhController 中了
-        - id: suyh-demo
+        - id: suyh-demo-name
           uri: http://localhost:11001
           predicates:
-            - Path=/suyh/**
+            - Path=/suyh/name/**
+        - id: suyh-demo-age
+          uri: http://localhost:11001
+          predicates:
+            - Path=/suyh/age/**
 
 # 需要添加命令行参数，或者添加到默认配置文件(sentinel.properties)中
 # dashboard 服务器的访问域名
