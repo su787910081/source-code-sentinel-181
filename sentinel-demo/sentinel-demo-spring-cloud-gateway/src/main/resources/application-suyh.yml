@@ -29,6 +29,16 @@ spring:
           predicates:
             - Path=/suyh/age/**
 
+# spring cloud 的配置属性的优先级比sentinel.properties 配置文件的优先级更高，
+# 因为在对应的配置类中直接将其配置值通过System.setProperty(..) 设置其值
+# com.alibaba.cloud.sentinel.custom.SentinelAutoConfiguration
+# com.alibaba.cloud.sentinel.SentinelProperties
+# 上面两个配置类都是在包 com.alibaba.cloud: spring-cloud-starter-alibaba-sentinel 里面
+# 主要是SentinelAutoConfiguration.init() 方法将配置属性添加到系统属性中去了，所以优先级非常高了。
+# 而com.alibaba.csp.sentinel.config.SentinelConfigLoader.load() 方法先加载sentinel.properties 文件
+# 然后从系统属性中获取配置项，覆盖相关属性。所以sentinel.properties 中配置的属性会被SentinelProperties 中的属性覆盖掉。
+
+
 # 需要添加命令行参数，或者添加到默认配置文件(sentinel.properties)中
 # dashboard 服务器的访问域名
 #  -Dcsp.sentinel.dashboard.server=localhost:8080
