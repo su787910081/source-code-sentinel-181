@@ -52,6 +52,12 @@
             <artifactId>swagger-bootstrap-ui</artifactId>
             <version>1.9.3</version>
         </dependency>
+             
+        <dependency>
+            <groupId>com.alibaba.csp</groupId>
+            <artifactId>sentinel-web-servlet</artifactId>
+            <version>1.8.1</version>
+        </dependency>
     </dependencies>
 
 </project>
