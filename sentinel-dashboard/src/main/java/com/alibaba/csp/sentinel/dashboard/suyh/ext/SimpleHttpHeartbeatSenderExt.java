@@ -12,4 +12,10 @@ public class SimpleHttpHeartbeatSenderExt extends SimpleHttpHeartbeatSender {
     public SimpleHttpHeartbeatSenderExt() {
         System.out.println("SimpleHttpHeartbeatSenderExt----suyh");
     }
+
+    @Override
+    public boolean sendHeartbeat() throws Exception {
+        // TODO: suyh - 在这里重写
+        return super.sendHeartbeat();
+    }
 }
