@@ -15,9 +15,6 @@
  */
 package com.alibaba.csp.sentinel.slots.clusterbuilder;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.alibaba.csp.sentinel.Constants;
 import com.alibaba.csp.sentinel.EntryType;
 import com.alibaba.csp.sentinel.context.Context;
@@ -32,6 +29,9 @@ import com.alibaba.csp.sentinel.slotchain.ProcessorSlotChain;
 import com.alibaba.csp.sentinel.slotchain.ResourceWrapper;
 import com.alibaba.csp.sentinel.slotchain.StringResourceWrapper;
 import com.alibaba.csp.sentinel.spi.Spi;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>
@@ -50,6 +50,9 @@ import com.alibaba.csp.sentinel.spi.Spi;
 public class ClusterBuilderSlot extends AbstractLinkedProcessorSlot<DefaultNode> {
 
     /**
+     * 由于一个ContextName对应的同一个Resource共享同一个SlotChain，所以同一个ContextName对应的同一个Resource对应同一个ClusterBuilderSlot，
+     * 由于一个ClusterBuilderSlot对应一个ClusterNode，所以同一个ContextName对应的同一个Resource对应同一个ClusterNode。
+     *
      * <p>
      * Remember that same resource({@link ResourceWrapper#equals(Object)}) will share
      * the same {@link ProcessorSlotChain} globally, no matter in which context. So if
@@ -77,10 +80,12 @@ public class ClusterBuilderSlot extends AbstractLinkedProcessorSlot<DefaultNode>
     public void entry(Context context, ResourceWrapper resourceWrapper, DefaultNode node, int count,
                       boolean prioritized, Object... args)
         throws Throwable {
+        // 判断clusterNode是否为null，一个Resource共享同一个Chain，这里，一个Resource共享同一个clusterNode
         if (clusterNode == null) {
             synchronized (lock) {
                 if (clusterNode == null) {
                     // Create the cluster node.
+                    // 创建一个新的CusterNode，并保存
                     clusterNode = new ClusterNode(resourceWrapper.getName(), resourceWrapper.getResourceType());
                     HashMap<ResourceWrapper, ClusterNode> newMap = new HashMap<>(Math.max(clusterNodeMap.size(), 16));
                     newMap.putAll(clusterNodeMap);
@@ -96,6 +101,7 @@ public class ClusterBuilderSlot extends AbstractLinkedProcessorSlot<DefaultNode>
          * if context origin is set, we should get or create a new {@link Node} of
          * the specific origin.
          */
+        // 如果orgin不为"",则需要设置orginNode
         if (!"".equals(context.getOrigin())) {
             Node originNode = node.getClusterNode().getOrCreateOriginNode(context.getOrigin());
             context.getCurEntry().setOriginNode(originNode);

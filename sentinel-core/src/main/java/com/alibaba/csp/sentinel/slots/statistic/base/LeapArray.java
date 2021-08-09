@@ -15,13 +15,13 @@
  */
 package com.alibaba.csp.sentinel.slots.statistic.base;
 
+import com.alibaba.csp.sentinel.util.AssertUtil;
+import com.alibaba.csp.sentinel.util.TimeUtil;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.concurrent.locks.ReentrantLock;
-
-import com.alibaba.csp.sentinel.util.AssertUtil;
-import com.alibaba.csp.sentinel.util.TimeUtil;
 
 /**
  * <p>
@@ -40,11 +40,15 @@ import com.alibaba.csp.sentinel.util.TimeUtil;
  */
 public abstract class LeapArray<T> {
 
+    // 时间窗口的长度
     protected int windowLengthInMs;
+    // 采样窗口的个数
     protected int sampleCount;
+    // 以毫秒为单位的时间间隔
     protected int intervalInMs;
     private double intervalInSecond;
 
+    // 采样的时间窗口数组
     protected final AtomicReferenceArray<WindowWrap<T>> array;
 
     /**
@@ -335,6 +339,7 @@ public abstract class LeapArray<T> {
 
         for (int i = 0; i < size; i++) {
             WindowWrap<T> windowWrap = array.get(i);
+            // suyh - 过滤掉无效的窗口
             if (windowWrap == null || isWindowDeprecated(timeMillis, windowWrap)) {
                 continue;
             }
