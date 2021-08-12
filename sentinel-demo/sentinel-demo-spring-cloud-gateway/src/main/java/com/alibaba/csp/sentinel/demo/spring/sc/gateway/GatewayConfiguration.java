@@ -148,10 +148,23 @@ public class GatewayConfiguration {
             .setResourceMode(SentinelGatewayConstants.RESOURCE_MODE_CUSTOM_API_NAME)
             .setCount(5)
             .setIntervalSec(1)
-            .setParamItem(new GatewayParamFlowItem()
-                .setParseStrategy(SentinelGatewayConstants.PARAM_PARSE_STRATEGY_URL_PARAM)
-                .setFieldName("pn")
-            )
+        );
+        
+        // 资源名称，可以是网关中的 route 名称或者用户自定义的 API 分组名称。
+        rules.add(new GatewayFlowRule("suyh_customized_api")
+                // 规则是针对 API Gateway 的 route（RESOURCE_MODE_ROUTE_ID）
+                // 还是用户在 Sentinel 中定义的 API 分组（RESOURCE_MODE_CUSTOM_API_NAME），
+                // 默认是 route。
+            .setResourceMode(SentinelGatewayConstants.RESOURCE_MODE_CUSTOM_API_NAME)
+                // 限流阈值
+            .setCount(2)
+                // 统计时间窗口，单位是秒，默认是 1 秒。
+            .setIntervalSec(1)
+                // 参数限流配置。若不提供，则代表不针对参数进行限流，该网关规则将会被转换成普通流控规则；否则会转换成热点规则。
+//            .setParamItem(new GatewayParamFlowItem()
+//                .setParseStrategy(SentinelGatewayConstants.PARAM_PARSE_STRATEGY_URL_PARAM)
+//                .setFieldName("pn")
+//            )
         );
         GatewayRuleManager.loadRules(rules);
     }
