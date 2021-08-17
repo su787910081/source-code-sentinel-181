@@ -84,3 +84,27 @@ https://www.jianshu.com/p/59af9c03dc97
 spring-cloud-starter-alibaba-sentinel 源码地址
 https://github.com/alibaba/spring-cloud-alibaba/tree/master/spring-cloud-alibaba-starters/spring-cloud-starter-alibaba-sentinel
 
+集群流控
+	博客：https://blog.csdn.net/qq_26323323/article/details/103935230
+
+-Dserver.port=7717
+-Dproject.name=clusterDemo 
+-Dcsp.sentinel.dashboard.server=localhost:8071
+-Dcsp.sentinel.api.port=8720 
+-Dcsp.sentinel.log.use.pid=true 
+
+
+-Dserver.port=7719
+-Dproject.name=clusterDemo 
+-Dcsp.sentinel.dashboard.server=localhost:8071 
+-Dcsp.sentinel.api.port=8729 
+-Dcsp.sentinel.log.use.pid=true
+
+
+-Dserver.port=7720
+-Dproject.name=clusterDemo 
+-Dcsp.sentinel.dashboard.server=localhost:8071 
+-Dcsp.sentinel.api.port=8727  
+-Dcsp.sentinel.log.use.pid=true
+
+
