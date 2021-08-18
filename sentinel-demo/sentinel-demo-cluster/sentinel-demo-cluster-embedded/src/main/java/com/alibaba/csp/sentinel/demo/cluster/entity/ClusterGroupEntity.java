@@ -18,15 +18,22 @@ package com.alibaba.csp.sentinel.demo.cluster.entity;
 import java.util.Set;
 
 /**
+ * suyh - 当前实体在nacos 配置中的示例
+ * format: [{"clientSet":["112.12.88.66@8729","112.12.88.67@8727"],"ip":"112.12.88.68","machineId":"112.12.88.68@8728","port":11111}]
+ *
  * @author Eric Zhao
  * @since 1.4.1
  */
 public class ClusterGroupEntity {
 
+    // suyh - 服务器的机器 ID，默认是以"ip@port"的形式组成
+    // suyh - 这里的port 对应的是配置项："csp.sentinel.api.port"
     private String machineId;
     private String ip;
+    // suyh - 这里的端口是作为TokenServer 的监听端口
     private Integer port;
 
+    // suyh - 这里的值与machineId 的值类似的，但是这里面配置的都是客户端(TokenClient)
     private Set<String> clientSet;
 
     public String getMachineId() {
