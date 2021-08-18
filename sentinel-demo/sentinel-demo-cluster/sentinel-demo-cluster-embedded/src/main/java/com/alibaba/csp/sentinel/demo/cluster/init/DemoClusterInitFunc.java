@@ -66,19 +66,27 @@ public class DemoClusterInitFunc implements InitFunc {
         nacosProp.put(PropertyKeyConst.SERVER_ADDR, nacosRemoteAddress);
         nacosProp.put(PropertyKeyConst.NAMESPACE, nacosNamespaceId);
 
+        // Register client dynamic rule data source.
         // client：加载FlowRule（降级规则）
         initDynamicRuleProperty();
 
+        // Register token client related data source.
+        // Token client common config:
         // client：加载ClusterClientConfig（requestTimeout）
         initClientConfigProperty();
+        // Token client assign config (e.g. target token server) retrieved from assign map:
         // client：加载ClusterClientAssignConfig（serverHost、serverPort）
         initClientServerAssignProperty();
 
+        // Register token server related data source.
+        // Register dynamic rule data source supplier for token server:
         // server：加载集群规则，namespace下对应的FlowRule
         registerClusterRuleSupplier();
+        // Token server transport config extracted from assign map:
         // server：从assignMap中获取ServerTransportConfig（port、idleSeconds）
         initServerTransportConfigProperty();
 
+        // Init cluster state property for extracting mode from cluster map data source.
         // 根据我们的clusterDemo-cluster-map配置，设置当前应用状态（CLIENT/SERVER/NOT_STARTED）
         initStateProperty();
     }
@@ -153,7 +161,7 @@ public class DemoClusterInitFunc implements InitFunc {
     // 这里同样很关键，通过map配置中提前设定好的clientSet，machineID来确定当前应用是server还是client
     private void initStateProperty() {
         // Cluster map format:
-        // [{"clientSet":["169.254.207.96@8729","169.254.207.96@8727"],"ip":"169.254.207.96","machineId":"169.254.207.96@8720","port":7717}]
+        // [{"clientSet":["112.12.88.66@8729","112.12.88.67@8727"],"ip":"112.12.88.68","machineId":"112.12.88.68@8728","port":11111}]
         // machineId: <ip@commandPort>, commandPort for port exposed to Sentinel dashboard (transport module)
         ReadableDataSource<String, Integer> clusterModeDs = new NacosDataSource<>(nacosProp, groupId,
             clusterMapDataId, source -> {
