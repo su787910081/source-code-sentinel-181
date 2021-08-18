@@ -15,6 +15,7 @@
  */
 package com.alibaba.csp.sentinel.demo.cluster.app;
 
+import com.alibaba.csp.sentinel.init.InitExecutor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -26,5 +27,7 @@ public class ClusterDemoApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(ClusterDemoApplication.class, args);
+        // 应用启动成功立即启用sentinel
+        InitExecutor.doInit();
     }
 }

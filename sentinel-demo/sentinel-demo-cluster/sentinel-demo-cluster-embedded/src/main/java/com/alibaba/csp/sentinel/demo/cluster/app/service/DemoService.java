@@ -26,7 +26,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class DemoService {
 
-    @SentinelResource(blockHandler = "sayHelloBlockHandler")
+    // 特别注意下，这里的value值要修改为我们定义的resource，也就是我们在Nacos clusterDemo-flow-rules配置项对应的resource
+    @SentinelResource(value = "cluster-resource", blockHandler = "sayHelloBlockHandler")
     public String sayHello(String name) {
         return "Hello, " + name;
     }

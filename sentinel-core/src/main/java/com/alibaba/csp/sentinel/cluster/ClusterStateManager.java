@@ -37,8 +37,11 @@ import com.alibaba.csp.sentinel.util.TimeUtil;
  */
 public final class ClusterStateManager {
 
+    // suyh - 当前进程以TokenClient 模式运行
     public static final int CLUSTER_CLIENT = 0;
+    // suyh - 当前进程以TokenServer 模式运行
     public static final int CLUSTER_SERVER = 1;
+    // suyh - 当前进程没有以任何的集群进程模式运行
     public static final int CLUSTER_NOT_STARTED = -1;
 
     private static volatile int mode = CLUSTER_NOT_STARTED;
