@@ -15,12 +15,9 @@
  */
 package com.alibaba.csp.sentinel.adapter.gateway.sc.exception;
 
-import java.util.List;
-
 import com.alibaba.csp.sentinel.adapter.gateway.sc.callback.GatewayCallbackManager;
 import com.alibaba.csp.sentinel.slots.block.BlockException;
 import com.alibaba.csp.sentinel.util.function.Supplier;
-
 import org.springframework.http.codec.HttpMessageWriter;
 import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -28,6 +25,8 @@ import org.springframework.web.reactive.result.view.ViewResolver;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebExceptionHandler;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 /**
  * @author Eric Zhao
@@ -61,6 +60,9 @@ public class SentinelGatewayBlockExceptionHandler implements WebExceptionHandler
     }
 
     private Mono<ServerResponse> handleBlockedRequest(ServerWebExchange exchange, Throwable throwable) {
+        // suyh - 这里，获取网关BlockException 的处理回调方法并执行。
+        // suyh - 所以我们可以通过GatewayCallbackManager 来设置一个自定义的回调方法
+        // suyh - 默认的处理为: DefaultBlockRequestHandler
         return GatewayCallbackManager.getBlockHandler().handleRequest(exchange, throwable);
     }
 
