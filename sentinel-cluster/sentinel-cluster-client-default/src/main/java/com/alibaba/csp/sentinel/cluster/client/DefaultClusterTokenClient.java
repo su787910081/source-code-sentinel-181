@@ -50,6 +50,8 @@ public class DefaultClusterTokenClient implements ClusterTokenClient {
     private final AtomicBoolean shouldStart = new AtomicBoolean(false);
 
     public DefaultClusterTokenClient() {
+        // suyh - 向ClusterClientConfigManager 添加一个回调记录项，当服务器监听IP 端口发生变更时调用。
+        // suyh - 作为TokenClient 将断开原来的连接，以当前配置重新连接到TokenServer。
         ClusterClientConfigManager.addServerChangeObserver(new ServerChangeObserver() {
             @Override
             public void onRemoteServerChange(ClusterClientAssignConfig assignConfig) {
