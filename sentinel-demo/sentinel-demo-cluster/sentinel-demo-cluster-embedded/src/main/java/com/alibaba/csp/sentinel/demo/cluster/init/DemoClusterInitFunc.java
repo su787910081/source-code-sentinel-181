@@ -67,7 +67,7 @@ public class DemoClusterInitFunc implements InitFunc {
         nacosProp.put(PropertyKeyConst.NAMESPACE, nacosNamespaceId);
 
         // Register client dynamic rule data source.
-        // client：加载FlowRule（降级规则）
+        // suyh - 初始化规则，从nacos 加载初始化，并添加监听器。
         initDynamicRuleProperty();
 
         // Register token client related data source.
@@ -76,6 +76,7 @@ public class DemoClusterInitFunc implements InitFunc {
         initClientConfigProperty();
         // Token client assign config (e.g. target token server) retrieved from assign map:
         // client：加载ClusterClientAssignConfig（serverHost、serverPort）
+        // suyh - 这里只是从nacos 中加载初始化信息，并初始化ClusterClientConfigManager 对应的数据，最终使用是在DefaultClusterTokenClient 中。
         initClientServerAssignProperty();
 
         // Register token server related data source.
@@ -91,12 +92,13 @@ public class DemoClusterInitFunc implements InitFunc {
         initStateProperty();
     }
 
-    // 这个最简单，本地加载降级规则，没啥好说的
     private void initDynamicRuleProperty() {
+        // suyh - 流控规则
         ReadableDataSource<String, List<FlowRule>> ruleSource = new NacosDataSource<>(nacosProp, groupId,
             flowDataId, source -> JSON.parseObject(source, new TypeReference<List<FlowRule>>() {}));
         FlowRuleManager.register2Property(ruleSource.getProperty());
 
+        // suyh - 热点流控规则
         ReadableDataSource<String, List<ParamFlowRule>> paramRuleSource = new NacosDataSource<>(nacosProp, groupId,
             paramDataId, source -> JSON.parseObject(source, new TypeReference<List<ParamFlowRule>>() {}));
         ParamFlowRuleManager.register2Property(paramRuleSource.getProperty());
@@ -109,14 +111,17 @@ public class DemoClusterInitFunc implements InitFunc {
         ClusterClientConfigManager.registerClientConfigProperty(clientConfigDs.getProperty());
     }
 
-    // server端加载port
+    // server端加载Token Server 的监听端口
     private void initServerTransportConfigProperty() {
         ReadableDataSource<String, ServerTransportConfig> serverTransportDs = new NacosDataSource<>(nacosProp, groupId,
             clusterMapDataId, source -> {
             List<ClusterGroupEntity> groupList = JSON.parseObject(source, new TypeReference<List<ClusterGroupEntity>>() {});
             return Optional.ofNullable(groupList)
-                // 主要在这里，通过clusterDemo-cluster-map配置的值中的machineID来比对当前应用IP:port是否符合，符合则代表是server端
+                // 主要在这里，通过clusterDemo-cluster-map配置的值中的machineID来比对当前应用IP@port是否符合，符合则代表是server端
                 // 获取配置中的port值
+                // suyh - 将ClusterGroupEntity 解析出来
+                // suyh - 服务器匹配，校验属性machineId，如果当前进程与该值匹配，则认为当前进程为服务器，直接返回ServerTransportConfig 对象。
+                // suyh - 否则返回 null
                 .flatMap(this::extractServerTransportConfig)
                 .orElse(null);
         });
@@ -147,9 +152,15 @@ public class DemoClusterInitFunc implements InitFunc {
         // Cluster map format:
         // [{"clientSet":["112.12.88.66@8729","112.12.88.67@8727"],"ip":"112.12.88.68","machineId":"112.12.88.68@8728","port":11111}]
         // machineId: <ip@commandPort>, commandPort for port exposed to Sentinel dashboard (transport module)
+        // suyh - 如果当前进程是客户端则最终解析出一个对象，如果当前进程是服务器则最终返回null。
         ReadableDataSource<String, ClusterClientAssignConfig> clientAssignDs = new NacosDataSource<>(nacosProp, groupId,
             clusterMapDataId, source -> {
+            // suyh - nacos 中配置的值首先解析出来的是ClusterGroupEntity 对象。
             List<ClusterGroupEntity> groupList = JSON.parseObject(source, new TypeReference<List<ClusterGroupEntity>>() {});
+            // suyh - 将ClusterGroupEntity 解析出来
+            // suyh - 首先进行服务器校验的匹配，校验属性machineId，如果当前进程与该值匹配，则认为当前进程为服务器，直接返回null。
+            // suyh - 否则继续匹配clientSet 中的值，同样以machineId 的方式进行匹配，如果匹配，则当前进程为客户端。
+            // suyh - 如果匹配到当前进程为客户端，则返回一个ClusterClientAssignConfig 对象。
             return Optional.ofNullable(groupList)
                 // 主要在这里
                 .flatMap(this::extractClientAssignment)
