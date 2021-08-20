@@ -15,6 +15,23 @@
  */
 package com.alibaba.csp.sentinel.dashboard.service;
 
+import com.alibaba.csp.sentinel.cluster.ClusterStateManager;
+import com.alibaba.csp.sentinel.dashboard.client.SentinelApiClient;
+import com.alibaba.csp.sentinel.dashboard.domain.cluster.ClusterAppAssignResultVO;
+import com.alibaba.csp.sentinel.dashboard.domain.cluster.ClusterGroupEntity;
+import com.alibaba.csp.sentinel.dashboard.domain.cluster.config.ClusterClientConfig;
+import com.alibaba.csp.sentinel.dashboard.domain.cluster.config.ServerFlowConfig;
+import com.alibaba.csp.sentinel.dashboard.domain.cluster.config.ServerTransportConfig;
+import com.alibaba.csp.sentinel.dashboard.domain.cluster.request.ClusterAppAssignMap;
+import com.alibaba.csp.sentinel.dashboard.domain.cluster.state.ClusterUniversalStatePairVO;
+import com.alibaba.csp.sentinel.dashboard.util.MachineUtils;
+import com.alibaba.csp.sentinel.util.AssertUtil;
+import com.alibaba.csp.sentinel.util.function.Tuple2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -24,24 +41,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-
-import com.alibaba.csp.sentinel.cluster.ClusterStateManager;
-import com.alibaba.csp.sentinel.dashboard.domain.cluster.state.ClusterUniversalStatePairVO;
-import com.alibaba.csp.sentinel.util.AssertUtil;
-import com.alibaba.csp.sentinel.util.function.Tuple2;
-
-import com.alibaba.csp.sentinel.dashboard.client.SentinelApiClient;
-import com.alibaba.csp.sentinel.dashboard.domain.cluster.ClusterAppAssignResultVO;
-import com.alibaba.csp.sentinel.dashboard.domain.cluster.ClusterGroupEntity;
-import com.alibaba.csp.sentinel.dashboard.domain.cluster.config.ClusterClientConfig;
-import com.alibaba.csp.sentinel.dashboard.domain.cluster.config.ServerFlowConfig;
-import com.alibaba.csp.sentinel.dashboard.domain.cluster.config.ServerTransportConfig;
-import com.alibaba.csp.sentinel.dashboard.domain.cluster.request.ClusterAppAssignMap;
-import com.alibaba.csp.sentinel.dashboard.util.MachineUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /**
  * @author Eric Zhao
@@ -149,6 +148,7 @@ public class ClusterAssignServiceImpl implements ClusterAssignService {
         Set<String> failedClientSet = new HashSet<>();
 
         // Assign server and apply config.
+        // suyh - 指定该嵌入式服务器的集群模式为服务器
         clusterMap.stream()
             .filter(Objects::nonNull)
             .filter(ClusterAppAssignMap::getBelongToApp)
@@ -162,11 +162,13 @@ public class ClusterAssignServiceImpl implements ClusterAssignService {
             .forEach(t -> handleFutureSync(t, failedServerSet));
 
         // Assign client of servers and apply config.
+        // suyh - 指定这些集群机器为集群客户端，并赋上对应的服务器IP:PORT
         clusterMap.parallelStream()
             .filter(Objects::nonNull)
             .forEach(e -> applyAllClientConfigChange(app, e, failedClientSet));
 
         // Unbind remaining (unassigned) machines.
+        // suyh - 指定这些集群机器为未分配。
         applyAllRemainingMachineSet(app, remainingSet, failedClientSet);
 
         return new ClusterAppAssignResultVO()

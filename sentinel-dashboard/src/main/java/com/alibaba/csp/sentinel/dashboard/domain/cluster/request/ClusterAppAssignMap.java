@@ -27,6 +27,7 @@ public class ClusterAppAssignMap {
     private String ip;
     private Integer port;
 
+    // suyh - 是否为内部机，嵌入式集群，前端就能够确定了。
     private Boolean belongToApp;
 
     private Set<String> clientSet;

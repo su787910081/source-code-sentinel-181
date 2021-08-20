@@ -74,3 +74,18 @@ ClusterUniversalStatePairVO {
 
 命令请求: "cluster/client/fetchConfig" 里面的ip port 需要处理
 命令请求: "cluster/server/info" 里面的各种Port 都需要处理
+
+
+命令请求: "cluster/server/modifyFlowRules"  修改集群流控规则，当前在sentinelDashboard 里面还没有任何地方调用该请求。
+
+
+// 集群流控检查
+com.alibaba.csp.sentinel.slots.block.flow.FlowRuleChecker.passClusterCheck(..)
+
+// 默认的集群namespace 在ConfigSupplierRegistry 
+// 如果没有重新进行set 那么名字空间就是appName
+
+# 独立模式博客：
+https://www.jianshu.com/p/67d02420e814
+# 独立模式参考链接
+https://github.com/all4you/sentinel-tutorial/blob/master/sentinel-practice/sentinel-cluster-flow-control/sentinel-cluster-flow-environment-build.md

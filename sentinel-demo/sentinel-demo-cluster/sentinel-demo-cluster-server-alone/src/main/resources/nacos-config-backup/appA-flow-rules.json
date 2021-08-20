@@ -1,0 +1,13 @@
+[
+  {
+    "resource" : "cluster-resource",
+    "grade" : 1,
+    "count" : 2,
+    "clusterMode" :  true,
+    "clusterConfig" : {
+      "flowId" : 111,
+      "thresholdType" : 1,
+      "fallbackToLocalWhenFail" : true
+    }
+  }
+]

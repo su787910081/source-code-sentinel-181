@@ -15,12 +15,11 @@
  */
 package com.alibaba.csp.sentinel.dashboard.repository.rule;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 import com.alibaba.csp.sentinel.dashboard.datasource.entity.rule.FlowRuleEntity;
 import com.alibaba.csp.sentinel.slots.block.flow.ClusterFlowConfig;
-
 import org.springframework.stereotype.Component;
+
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Store {@link FlowRuleEntity} in memory.
@@ -46,7 +45,8 @@ public class InMemFlowRuleStore extends InMemoryRuleRepositoryAdapter<FlowRuleEn
                 entity.setClusterConfig(config);
             }
             // Set cluster rule id.
-            config.setFlowId(entity.getId());
+            // TODO: suyh - 这里为什么要重新设置集群ID，这里重新设置了之后如果修改了集群流控那么原来的流控通过ID 就取不到了。
+            // config.setFlowId(entity.getId());
         }
         return entity;
     }
