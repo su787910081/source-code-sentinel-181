@@ -52,7 +52,7 @@ public class DemoClusterInitFunc implements InitFunc {
     private static final String APP_NAME = AppNameUtil.getAppName();
 
     private final Properties nacosProp = new Properties();
-    private final String nacosRemoteAddress = "kwe-beta.huawei.com:80";
+    private final String nacosRemoteAddress = "localhost:8848";
     private final String nacosNamespaceId = "suyh-local-nacos";
     private final String groupId = "DEFAULT_GROUP";
 
