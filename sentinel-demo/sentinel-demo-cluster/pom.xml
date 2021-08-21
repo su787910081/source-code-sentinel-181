@@ -15,6 +15,7 @@
     <modules>
         <module>sentinel-demo-cluster-embedded</module>
         <module>sentinel-demo-cluster-server-alone</module>
+        <module>sentinel-demo-cluster-server-alone-client</module>
     </modules>
 
 </project>

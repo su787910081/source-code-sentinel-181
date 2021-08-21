@@ -53,7 +53,7 @@ public class DemoClusterInitFunc implements InitFunc {
 
     private final Properties nacosProp = new Properties();
     private final String nacosRemoteAddress = "localhost:8848";
-    private final String nacosNamespaceId = "suyh-local-nacos";
+    private final String nacosNamespaceId = "suyh-sentinel-embedded";
     private final String groupId = "DEFAULT_GROUP";
 
     private final String flowDataId = APP_NAME + DemoConstants.FLOW_POSTFIX;
@@ -89,6 +89,10 @@ public class DemoClusterInitFunc implements InitFunc {
 
         // Init cluster state property for extracting mode from cluster map data source.
         // 根据我们的clusterDemo-cluster-map配置，设置当前应用状态（CLIENT/SERVER/NOT_STARTED）
+        // suyh - 本机以集群方式启动之后的状态(三选一)为：
+        // ClusterStateManager.CLUSTER_CLIENT、
+        // ClusterStateManager.CLUSTER_SERVER、
+        // ClusterStateManager.CLUSTER_NOT_STARTED
         initStateProperty();
     }
 
