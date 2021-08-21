@@ -52,16 +52,18 @@ public class DemoClusterServerInitFunc implements InitFunc {
         nacosProp.put(PropertyKeyConst.NAMESPACE, nacosNamespaceId);
 
         // Register cluster flow rule property supplier which creates data source by namespace.
+        // suyh - 每一个客户端集群被列为一组namespace，而这个namespace 在TokenServer 中并没有使用。
+        // suyh - 它只是可以将所有的客户端集群的流控都加载进来，并保存下来进行管理。
         ClusterFlowRuleManager.setPropertySupplier(namespace -> {
             ReadableDataSource<String, List<FlowRule>> ds = new NacosDataSource<>(nacosProp, groupId,
-                namespace + DemoConstants.FLOW_POSTFIX,
+                namespace + DemoConstants.CLUSTER_FLOW_POSTFIX,
                 source -> JSON.parseObject(source, new TypeReference<List<FlowRule>>() {}));
             return ds.getProperty();
         });
         // Register cluster parameter flow rule property supplier.
         ClusterParamFlowRuleManager.setPropertySupplier(namespace -> {
             ReadableDataSource<String, List<ParamFlowRule>> ds = new NacosDataSource<>(nacosProp, groupId,
-                namespace + DemoConstants.PARAM_FLOW_POSTFIX,
+                namespace + DemoConstants.CLUSTER_PARAM_FLOW_POSTFIX,
                 source -> JSON.parseObject(source, new TypeReference<List<ParamFlowRule>>() {}));
             return ds.getProperty();
         });

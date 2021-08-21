@@ -27,11 +27,10 @@ import com.alibaba.csp.sentinel.datasource.ReadableDataSource;
 import com.alibaba.csp.sentinel.datasource.nacos.NacosDataSource;
 import com.alibaba.csp.sentinel.demo.cluster.DemoConstants;
 import com.alibaba.csp.sentinel.demo.cluster.entity.ClusterGroupEntity;
+import com.alibaba.csp.sentinel.demo.cluster.flow.rule.ClusterClientFlowRuleManager;
 import com.alibaba.csp.sentinel.init.InitFunc;
 import com.alibaba.csp.sentinel.slots.block.flow.FlowRule;
-import com.alibaba.csp.sentinel.slots.block.flow.FlowRuleManager;
 import com.alibaba.csp.sentinel.slots.block.flow.param.ParamFlowRule;
-import com.alibaba.csp.sentinel.slots.block.flow.param.ParamFlowRuleManager;
 import com.alibaba.csp.sentinel.transport.config.TransportConfig;
 import com.alibaba.csp.sentinel.util.AppNameUtil;
 import com.alibaba.csp.sentinel.util.HostNameUtil;
@@ -56,8 +55,8 @@ public class DemoClusterInitFunc implements InitFunc {
     private final String nacosNamespaceId = "suyh-sentinel-embedded";
     private final String groupId = "DEFAULT_GROUP";
 
-    private final String flowDataId = APP_NAME + DemoConstants.FLOW_POSTFIX;
-    private final String paramDataId = APP_NAME + DemoConstants.PARAM_FLOW_POSTFIX;
+    private final String clusterFlowDataId = APP_NAME + DemoConstants.CLUSTER_FLOW_POSTFIX;
+    private final String clusterParamDataId = APP_NAME + DemoConstants.CLUSTER_PARAM_FLOW_POSTFIX;
     private final String configDataId = APP_NAME + "-cluster-client-config";
     private final String clusterMapDataId = APP_NAME + DemoConstants.CLUSTER_MAP_POSTFIX;
 
@@ -97,15 +96,11 @@ public class DemoClusterInitFunc implements InitFunc {
     }
 
     private void initDynamicRuleProperty() {
-        // suyh - 流控规则
-        ReadableDataSource<String, List<FlowRule>> ruleSource = new NacosDataSource<>(nacosProp, groupId,
-            flowDataId, source -> JSON.parseObject(source, new TypeReference<List<FlowRule>>() {}));
-        FlowRuleManager.register2Property(ruleSource.getProperty());
-
-        // suyh - 热点流控规则
-        ReadableDataSource<String, List<ParamFlowRule>> paramRuleSource = new NacosDataSource<>(nacosProp, groupId,
-            paramDataId, source -> JSON.parseObject(source, new TypeReference<List<ParamFlowRule>>() {}));
-        ParamFlowRuleManager.register2Property(paramRuleSource.getProperty());
+        // suyh - 集群流控规则
+        ReadableDataSource<String, List<FlowRule>> ds = new NacosDataSource<>(nacosProp, groupId, clusterFlowDataId,
+                source -> JSON.parseObject(source, new TypeReference<List<FlowRule>>() {
+                }));
+        ClusterClientFlowRuleManager.register2Property(ds.getProperty());
     }
 
     // client端加载requestTimeout配置
@@ -140,13 +135,13 @@ public class DemoClusterInitFunc implements InitFunc {
         // Flow rule dataId format: ${namespace}-flow-rules
         ClusterFlowRuleManager.setPropertySupplier(namespace -> {
             ReadableDataSource<String, List<FlowRule>> ds = new NacosDataSource<>(nacosProp, groupId,
-                namespace + DemoConstants.FLOW_POSTFIX, source -> JSON.parseObject(source, new TypeReference<List<FlowRule>>() {}));
+                namespace + DemoConstants.CLUSTER_FLOW_POSTFIX, source -> JSON.parseObject(source, new TypeReference<List<FlowRule>>() {}));
             return ds.getProperty();
         });
         // Register cluster parameter flow rule property supplier which creates data source by namespace.
         ClusterParamFlowRuleManager.setPropertySupplier(namespace -> {
             ReadableDataSource<String, List<ParamFlowRule>> ds = new NacosDataSource<>(nacosProp, groupId,
-                namespace + DemoConstants.PARAM_FLOW_POSTFIX, source -> JSON.parseObject(source, new TypeReference<List<ParamFlowRule>>() {}));
+                namespace + DemoConstants.CLUSTER_PARAM_FLOW_POSTFIX, source -> JSON.parseObject(source, new TypeReference<List<ParamFlowRule>>() {}));
             return ds.getProperty();
         });
     }

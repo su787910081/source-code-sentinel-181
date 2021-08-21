@@ -3,20 +3,17 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>sentinel-demo</artifactId>
+        <artifactId>sentinel-demo-cluster</artifactId>
         <groupId>com.alibaba.csp</groupId>
         <version>1.8.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>sentinel-demo-cluster</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>sentinel-demo-cluster-common</artifactId>
 
-    <modules>
-        <module>sentinel-demo-cluster-embedded</module>
-        <module>sentinel-demo-cluster-server-alone</module>
-        <module>sentinel-demo-cluster-server-alone-client</module>
-        <module>sentinel-demo-cluster-common</module>
-    </modules>
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+    </properties>
 
 </project>

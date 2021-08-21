@@ -40,5 +40,10 @@
             <artifactId>logback-classic</artifactId>
             <version>1.2.3</version>
         </dependency>
+        <dependency>
+            <groupId>com.alibaba.csp</groupId>
+            <artifactId>sentinel-demo-cluster-common</artifactId>
+            <version>1.8.1</version>
+        </dependency>
     </dependencies>
 </project>

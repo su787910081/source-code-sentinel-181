@@ -1,0 +1,2 @@
+# 集群流控Slot，集群流控优先级高于普通流控优先级
+com.alibaba.csp.sentinel.demo.cluster.flow.slot.ClusterFlowSlot
