@@ -1,6 +1,21 @@
 这个项目要是直接build 是会失败的，但是可以直接运行dashboard
 
 
+## 编译模块(sentinel-cluster-server-envoy-rls)
+
+在`sentinel-cluster-server-envoy-rls/pom.xml` 中添加依赖即可编译通过
+
+> ```xml
+>         <dependency>
+>             <groupId>io.envoyproxy.controlplane</groupId>
+>             <artifactId>server</artifactId>
+>             <version>0.1.28</version>
+>         </dependency>
+> ```
+>
+> 
+
+
 
 ## protoc
 

@@ -78,6 +78,13 @@
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
+             
+        <!-- suyh - 原来添加该依赖就可以编译通过了呀 -->
+        <dependency>
+            <groupId>io.envoyproxy.controlplane</groupId>
+            <artifactId>server</artifactId>
+            <version>0.1.28</version>
+        </dependency>
     </dependencies>
 
     <build>
