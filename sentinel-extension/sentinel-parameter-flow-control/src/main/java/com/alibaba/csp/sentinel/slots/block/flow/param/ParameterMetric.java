@@ -15,6 +15,10 @@
  */
 package com.alibaba.csp.sentinel.slots.block.flow.param;
 
+import com.alibaba.csp.sentinel.log.RecordLog;
+import com.alibaba.csp.sentinel.slots.statistic.cache.CacheMap;
+import com.alibaba.csp.sentinel.slots.statistic.cache.ConcurrentLinkedHashMapWrapper;
+
 import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.HashMap;
@@ -22,11 +26,8 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.alibaba.csp.sentinel.log.RecordLog;
-import com.alibaba.csp.sentinel.slots.statistic.cache.CacheMap;
-import com.alibaba.csp.sentinel.slots.statistic.cache.ConcurrentLinkedHashMapWrapper;
-
 /**
+ * suyh - 每个资源都对应一个ParameterMetric 对象
  * Metrics for frequent ("hot spot") parameters.
  *
  * @author Eric Zhao
@@ -41,17 +42,22 @@ public class ParameterMetric {
     private final Object lock = new Object();
 
     /**
+     * 记录令牌桶的最后添加时间，用于 QPS 限流
      * Format: (rule, (value, timeRecorder))
      *
      * @since 1.6.0
      */
     private final Map<ParamFlowRule, CacheMap<Object, AtomicLong>> ruleTimeCounters = new HashMap<>();
     /**
+     * 记录令牌桶的令牌数量，用于 QPS 限流
      * Format: (rule, (value, tokenCounter))
      *
      * @since 1.6.0
      */
     private final Map<ParamFlowRule, CacheMap<Object, AtomicLong>> ruleTokenCounter = new HashMap<>();
+
+    // 用于线程级别限流，这个其实和令牌桶算法没有关系了，线程限流只是在 Rule 中定义了最大线程数，
+    // 请求时判断一下当前的线程数是否大于最大线程，具体的应用在 ParamFlowChecker#passSingleValueCheck
     private final Map<Integer, CacheMap<Object, AtomicInteger>> threadCountMap = new HashMap<>();
 
     /**

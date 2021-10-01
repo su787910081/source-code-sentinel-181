@@ -15,19 +15,19 @@
  */
 package com.alibaba.csp.sentinel.demo.flow.param;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
-
 import com.alibaba.csp.sentinel.Entry;
 import com.alibaba.csp.sentinel.EntryType;
 import com.alibaba.csp.sentinel.SphU;
 import com.alibaba.csp.sentinel.slots.block.BlockException;
 import com.alibaba.csp.sentinel.util.StringUtil;
 import com.alibaba.csp.sentinel.util.TimeUtil;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * A traffic runner to simulate flow for different parameters.
@@ -81,7 +81,7 @@ class ParamFlowQpsRunner<T> {
     }
 
     void simulateTraffic() {
-        for (int i = 0; i < threadCount; i++) {
+        for (int i = 0; i < 1; i++) {
             Thread t = new Thread(new RunTask());
             t.setName("sentinel-simulate-traffic-task-" + i);
             t.start();

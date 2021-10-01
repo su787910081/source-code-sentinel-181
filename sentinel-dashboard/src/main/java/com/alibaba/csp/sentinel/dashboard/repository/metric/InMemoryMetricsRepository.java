@@ -117,6 +117,7 @@ public class InMemoryMetricsRepository implements MetricsRepository<MetricEntity
         if (StringUtil.isBlank(app)) {
             return results;
         }
+        // suyh - 获取到对应app 的所有资源信息
         // resource -> timestamp -> metric
         Map<String, LinkedHashMap<Long, MetricEntity>> resourceMap = allMetrics.get(app);
         if (resourceMap == null) {
@@ -128,10 +129,13 @@ public class InMemoryMetricsRepository implements MetricsRepository<MetricEntity
         readWriteLock.readLock().lock();
         try {
             for (Entry<String, LinkedHashMap<Long, MetricEntity>> resourceMetrics : resourceMap.entrySet()) {
+                // suyh - 每一个资源的时间戳数据列表
                 for (Entry<Long, MetricEntity> metrics : resourceMetrics.getValue().entrySet()) {
+                    // suyh - 忽略掉一分钟之前的
                     if (metrics.getKey() < minTimeMs) {
                         continue;
                     }
+                    // suyh - 某一个时间戳对应的统计数据
                     MetricEntity newEntity = metrics.getValue();
                     if (resourceCount.containsKey(resourceMetrics.getKey())) {
                         MetricEntity oldEntity = resourceCount.get(resourceMetrics.getKey());
