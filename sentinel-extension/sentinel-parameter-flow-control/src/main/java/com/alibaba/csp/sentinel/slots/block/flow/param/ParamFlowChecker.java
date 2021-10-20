@@ -155,9 +155,12 @@ public final class ParamFlowChecker {
         while (true) {
             long currentTime = TimeUtil.currentTimeMillis();
 
+            // suyh - 对于该资源的该参数值，如果是第一次访问，则创建对应的原子对象，保存当前时间
             AtomicLong lastAddTokenTime = timeCounters.putIfAbsent(value, new AtomicLong(currentTime));
             if (lastAddTokenTime == null) {
                 // Token never added, just replenish the tokens and consume {@code acquireCount} immediately.
+                // suyh - 因为是每一次访问，时间创建了，同步也需要创建令牌数。但是这里的令牌数会将该次请求的数量扣减掉。
+                // suyh - 这里初始化的时候添加了burst count 的值
                 tokenCounters.putIfAbsent(value, new AtomicLong(maxCount - acquireCount));
                 return true;
             }
@@ -165,14 +168,17 @@ public final class ParamFlowChecker {
             // Calculate the time duration since last token was added.
             long passTime = currentTime - lastAddTokenTime.get();
             // A simplified token bucket algorithm that will replenish the tokens only when statistic window has passed.
+            // suyh - 如果当前时间与最后一次的相距时长，超过了统计时长。则重置统计时间与令牌
             if (passTime > rule.getDurationInSec() * 1000) {
                 AtomicLong oldQps = tokenCounters.putIfAbsent(value, new AtomicLong(maxCount - acquireCount));
                 if (oldQps == null) {
                     // Might not be accurate here.
+                    // suyh - 不应该出现跑到这里的情况
                     lastAddTokenTime.set(currentTime);
                     return true;
                 } else {
                     long restQps = oldQps.get();
+                    // suyh - 在这个间隔时间内
                     long toAddCount = (passTime * tokenCount) / (rule.getDurationInSec() * 1000);
                     long newQps = toAddCount + restQps > maxCount ? (maxCount - acquireCount)
                         : (restQps + toAddCount - acquireCount);
@@ -187,6 +193,7 @@ public final class ParamFlowChecker {
                     Thread.yield();
                 }
             } else {
+                // suyh - 在统计时长内，则判断是否还有足够令牌可取，若可以则取出令牌，否则限流(拒绝访问)。
                 AtomicLong oldQps = tokenCounters.get(value);
                 if (oldQps != null) {
                     long oldQpsValue = oldQps.get();
