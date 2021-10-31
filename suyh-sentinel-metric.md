@@ -23,3 +23,12 @@ final String url = "http://" + machine.getIp() + ":" + machine.getPort() + "/" +
 实际执行操作是：`MetricWriter`
 
 统计数据格式：`MetricNode#toFatString`
+
+
+
+## sentinel 提供了统计扩展接口
+
+`MetricExtension`
+
+spi 加载类: `MetricExtensionProvider`
+
