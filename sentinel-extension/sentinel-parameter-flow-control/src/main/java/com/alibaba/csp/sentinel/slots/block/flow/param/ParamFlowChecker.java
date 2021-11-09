@@ -156,7 +156,9 @@ public final class ParamFlowChecker {
             long currentTime = TimeUtil.currentTimeMillis();
 
             // suyh - 对于该资源的该参数值，如果是第一次访问，则创建对应的原子对象，保存当前时间
-            AtomicLong lastAddTokenTime = timeCounters.putIfAbsent(value, new AtomicLong(currentTime));
+            // 开始时间控制到整秒，与统计时间窗口起始时间一致。
+            long startTime = currentTime - currentTime % 1000;
+            AtomicLong lastAddTokenTime = timeCounters.putIfAbsent(value, new AtomicLong(startTime));
             if (lastAddTokenTime == null) {
                 // Token never added, just replenish the tokens and consume {@code acquireCount} immediately.
                 // suyh - 因为是每一次访问，时间创建了，同步也需要创建令牌数。但是这里的令牌数会将该次请求的数量扣减掉。
@@ -174,7 +176,8 @@ public final class ParamFlowChecker {
                 if (oldQps == null) {
                     // Might not be accurate here.
                     // suyh - 不应该出现跑到这里的情况
-                    lastAddTokenTime.set(currentTime);
+                    // 重置起始计时时刻
+                    lastAddTokenTime.set(startTime);
                     return true;
                 } else {
                     long restQps = oldQps.get();
@@ -187,7 +190,8 @@ public final class ParamFlowChecker {
                         return false;
                     }
                     if (oldQps.compareAndSet(restQps, newQps)) {
-                        lastAddTokenTime.set(currentTime);
+                        // 重置起始计时时刻
+                        lastAddTokenTime.set(startTime);
                         return true;
                     }
                     Thread.yield();
@@ -232,7 +236,9 @@ public final class ParamFlowChecker {
         long costTime = Math.round(1.0 * 1000 * acquireCount * rule.getDurationInSec() / tokenCount);
         while (true) {
             long currentTime = TimeUtil.currentTimeMillis();
-            AtomicLong timeRecorder = timeRecorderMap.putIfAbsent(value, new AtomicLong(currentTime));
+            // 开始时间控制到整秒，与统计时间窗口起始时间一致。
+            long startTime = currentTime - currentTime % 1000;
+            AtomicLong timeRecorder = timeRecorderMap.putIfAbsent(value, new AtomicLong(startTime));
             if (timeRecorder == null) {
                 return true;
             }
@@ -242,7 +248,8 @@ public final class ParamFlowChecker {
 
             if (expectedTime <= currentTime || expectedTime - currentTime < rule.getMaxQueueingTimeMs()) {
                 AtomicLong lastPastTimeRef = timeRecorderMap.get(value);
-                if (lastPastTimeRef.compareAndSet(lastPassTime, currentTime)) {
+                // 更新下一次处理的时刻为期望的那个时刻
+                if (lastPastTimeRef.compareAndSet(lastPassTime, expectedTime)) {
                     long waitTime = expectedTime - currentTime;
                     if (waitTime > 0) {
                         lastPastTimeRef.set(expectedTime);
