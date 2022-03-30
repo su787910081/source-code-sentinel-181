@@ -54,6 +54,7 @@ public class DemoClusterServerInitFunc implements InitFunc {
         // Register cluster flow rule property supplier which creates data source by namespace.
         // suyh - 每一个客户端集群被列为一组namespace，而这个namespace 在TokenServer 中并没有使用。
         // suyh - 它只是可以将所有的客户端集群的流控都加载进来，并保存下来进行管理。
+        // suyh - 所有的namespace 对应的集群流控的处理回调都使用这一个。它的功能是：当有新的namespace 注册时，为其在nacos 注册一个集群流规则的对应监听。
         ClusterFlowRuleManager.setPropertySupplier(namespace -> {
             ReadableDataSource<String, List<FlowRule>> ds = new NacosDataSource<>(nacosProp, groupId,
                 namespace + DemoConstants.CLUSTER_FLOW_POSTFIX,
